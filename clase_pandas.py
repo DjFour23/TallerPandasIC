@@ -22,7 +22,6 @@ data['Código ISO del país']
 # Eliminar columnas de un dataset
 
 data.drop('Código ISO del país', axis = 1, inplace=True)
-data.drop('Nombre del país', axis = 1, inplace=True)
 data.drop('Pertenencia étnica', axis = 1, inplace=True)
 data.drop('Nombre del grupo étnico', axis = 1, inplace=True)
 data.drop('Fecha de inicio de síntomas', axis = 1, inplace=True)
@@ -76,6 +75,14 @@ data.groupby(['Estado', 'Sexo']).size()
 data.loc[data['Estado'] == 'M'] = 'Moderado'
 data.loc[data['Sexo'] == 'F'] = 'Fallecido'
 
+# Normalizar columna Ubicacion del caso
+data.loc[data['Ubicación del caso'] == 'casa'] = 'Casa'
+data.loc[data['Ubicación del caso'] == 'CASA'] = 'Casa'
+
+data.loc[data['Edad'] == 'Casa'] = 36
+data.loc[data['Edad'] == 'Leve'] = 36
+data.loc[data['Edad'] == 'M'] = 36
+data.loc[data['Edad'] == 'F'] = 36
 
 # Liste por orden descendente las 10 ciudades con mas casos reportados
 
@@ -160,6 +167,67 @@ print(f'Lista de los 10 municipios con mas fallecidos: \n {LMun10F}')
 aux = data[(data['Recuperado'] == 'Recuperado')].groupby('Nombre municipio').size()
 MunRec = aux.sort_values(ascending=False).head(10)
 print(f'Lista de los 10 municipios con mas recuperados: \n {MunRec}')
+
+#------------------------------------------------------------------------------------------------------------------
+
+#Liste agrupado por departamento y en orden de Mayor a menor las ciudades con mas casos de contagiados
+aux = data.groupby(['Nombre departamento', 'Nombre municipio']).size()
+aux.sort_values(ascending=False)
+
+#Número de Mujeres y hombres contagiados por ciudad por departamento
+aux = data.groupby(['Nombre departamento', 'Nombre municipio', 'Sexo']).size()
+aux.sort_values(ascending=False)
+
+#Liste el promedio de edad de contagiados por hombre y mujeres por ciudad por departamento
+aux = data.groupby(['Nombre departamento', 'Nombre municipio', 'Edad']).size()
+aux.sort_values(ascending=False)
+
+#Liste de mayor a menor el número de contagiados por país de procedencia
+aux = data.groupby(['Nombre del país']).size()
+contagiadosPais = aux.sort_values(ascending=False)
+print(f'Lista de mayor a menor de num de contagiados por Pais: \n {contagiadosPais}')
+
+#Liste de mayor a menor las fechas donde se presentaron mas contagios
+aux = data.groupby(['Fecha de diagnóstico']).size()
+fechacontagios = aux.sort_values(ascending=False)
+print(f'Lista de mayor a menor de fechas de mas contagios: \n {fechacontagios}')
+
+#Diga cual es la tasa de mortalidad y recuperación que tiene toda Colombia
+
+cantidadMuertes = data[data['Estado'] == 'Fallecido'].shape[0]
+cantidadRecuperados = data.query('Recuperado == "Recuperado"').shape[0]
+cantidadCasos = data.shape[0]
+
+tasaMortalidad = cantidadMuertes / cantidadCasos * 100
+tasaRecuperacion = cantidadRecuperados / cantidadCasos * 100
+
+print(f'La tasa de Mortalidad es: {tasaMortalidad}')
+print(f'La tasa de Recuperacion es: {tasaRecuperacion}')
+
+#Liste la tasa de mortalidad y recuperación que tiene cada departamento
+
+cantidadMuertesDept = data[data['Estado'] == 'Fallecido'].groupby('Nombre departamento').size()
+cantidadRecuperadosDept = data[data['Recuperado'] == 'Recuperado'].groupby('Nombre departamento').size()
+cantidadCasosDept = data.groupby('Nombre departamento').size()
+
+tasaMortalidadDept = cantidadMuertesDept / cantidadCasosDept * 100
+tasaRecuperacionDept = cantidadRecuperadosDept / cantidadCasosDept * 100
+
+print(f'La tasa de Mortalidad por departamento es: \n {tasaMortalidadDept}')
+print(f'La tasa de Recuperacion por departamento es: \n {tasaRecuperacionDept}')
+
+#Liste la tasa de mortalidad y recuperación que tiene cada ciudad
+
+cantidadMuertesC = data[data['Estado'] == 'Fallecido'].groupby('Nombre municipio').size()
+cantidadRecuperadosC = data[data['Recuperado'] == 'Recuperado'].groupby('Nombre municipio').size()
+cantidadCasosC = data.groupby('Nombre municipio').size()
+
+tasaMortalidadC = cantidadMuertesC / cantidadCasosC * 100
+tasaRecuperacionC = cantidadRecuperadosC / cantidadCasosC * 100
+
+print(f'La tasa de Mortalidad por Ciudad es: \n {tasaMortalidadC}')
+print(f'La tasa de Recuperacion por Ciudad es: \n {tasaRecuperacionC}')
+
 
 
 
