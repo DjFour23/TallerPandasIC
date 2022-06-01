@@ -242,7 +242,7 @@ print(f'Lista de personas en atencion por ciudad: \n{atencion}')
 promEdadSexo = data.groupby(['Nombre municipio', 'Sexo']).Edad.mean()
 print(f'Lista promedio de edad por ciudad contafiados: \n{promEdadSexo}')
 
-# Grafique las curvas de contagio, muerte y recuperacion de toda colombia 
+# Grafique las curvas de contagio, muerte y recuperacion de toda Colombia 
 contg = data.groupby('Fecha de diagnóstico').size().sort_values().plot(figsize=(15, 4))
 print('\nCurva de Contagios')
 plt.show(contg)
@@ -281,6 +281,10 @@ curv_recu_munic = data[data['Recuperado'] == 'Recuperado'].groupby('Nombre munic
 print('\nCurva de los 10 municipios con mas personas recuperadas')
 plt.show(curv_recu_munic)
 
+
+# Liste de mayor a menor la cantidad de fallecidos por edad en toda Colombia
+fallecidos = data[data['Recuperado'] == 'fallecido'].groupby('Edad').size().sort_values(ascending = False)
+print(f'{fallecidos}')
 
 
 
